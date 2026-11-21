@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCHA MARKET</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">🌲 ARCHA MARKET</div>
+  <div class="header-right">
+    <span id="clock"></span>
+    <button class="admin-btn" onclick="openAdmin()">⚙ ADMIN</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section id="sellerPage">
+    <div class="welcome">
+      <div>
+        <h1>Archa katalogi</h1>
+        <p>O'zingizga kerakli archani tanlang va savatga qo'shing.</p>
+      </div>
+      <button class="cart-button" onclick="toggleCart()">
+        🛒 Savat <span id="cartCount">0</span>
+      </button>
+    </div>
+
+    <div class="search-row">
+      <input id="search" placeholder="Archa qidirish..." oninput="renderProducts()">
+      <select id="categoryFilter" onchange="renderProducts()">
+        <option value="">Barcha archalar</option>
+      </select>
+    </div>
+
+    <div id="productGrid" class="product-grid"></div>
+  </section>
+
+  <section id="cartPage" class="hidden">
+    <button class="back-btn" onclick="showSeller()">← Orqaga</button>
+    <h1>Savatcha</h1>
+    <div class="cart-layout">
+      <div class="panel">
+        <h3>Tanlangan archalar</h3>
+        <div id="cartItems"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Mijoz ma'lumotlari</h3>
+        <form id="orderForm">
+          <label>Ism-familiya</label>
+          <input id="customerName" required placeholder="Mijoz ismi">
+
+          <label>Telefon raqami</label>
+          <input id="customerPhone" required type="tel" placeholder="+998 90 123 45 67">
+
+          <label>Manzil</label>
+          <textarea id="customerAddress" required placeholder="Yetkazib berish manzili"></textarea>
+
+          <label>Izoh</label>
+          <textarea id="customerNote" placeholder="Qo'shimcha izoh (ixtiyoriy)"></textarea>
+
+          <div class="total-line">
+            <span>JAMI:</span>
+            <strong id="cartTotal">0 so'm</strong>
+          </div>
+
+          <button class="primary-btn full" type="submit">SAVDONI YAKUNLASH</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="adminLogin" class="hidden">
+    <div class="login-box">
+      <h2>🔐 Admin panel</h2>
+      <p>Admin parolini kiriting</p>
+      <form id="adminLoginForm">
+        <input id="adminPassword" type="password" placeholder="Admin paroli" required>
+        <button class="primary-btn full">KIRISH</button>
+      </form>
+      <button class="back-btn" onclick="showSeller()">← Sotuvchi oynasiga qaytish</button>
+      <p id="loginError" class="error"></p>
+    </div>
+  </section>
+
+  <section id="adminPage" class="hidden">
+    <div class="admin-heading">
+      <div>
+        <h1>Admin boshqaruv paneli</h1>
+        <p>ARCHA MARKET — Boshqaruv tizimi</p>
+      </div>
+      <button class="logout-btn" onclick="adminLogout()">Chiqish</button>
+    </div>
+
+    <nav class="admin-nav">
+      <button class="selected" onclick="adminTab('overview',this)">Dashboard</button>
+      <button onclick="adminTab('productsAdmin',this)">Archalar</button>
+      <button onclick="adminTab('ordersAdmin',this)">Buyurtmalar</button>
+      <button onclick="adminTab('reportsAdmin',this)">Hisobotlar</button>
+      <button onclick="adminTab('settingsAdmin',this)">Sozlamalar</button>
+    </nav>
+
+    <div id="overview" class="admin-section">
+      <div class="stats">
+        <div class="stat-card"><span>Jami tushum</span><h2 id="statRevenue">0 so'm</h2></div>
+        <div class="stat-card"><span>Buyurtmalar</span><h2 id="statOrders">0</h2></div>
+        <div class="stat-card"><span>Archalar soni</span><h2 id="statProducts">0</h2></div>
+        <div class="stat-card"><span>Sotilgan archalar</span><h2 id="statSold">0</h2></div>
+      </div>
+
+      <div class="panel">
+        <h3>Oxirgi buyurtmalar</h3>
+        <div id="recentOrders"></div>
+      </div>
+    </div>
+
+    <div id="productsAdmin" class="admin-section hidden">
+      <div class="panel">
+        <h2>Yangi archa qo'shish</h2>
+        <form id="productForm">
+          <div class="form-grid">
+            <div>
+              <label>Archa nomi</label>
+              <input id="productName" required placeholder="Masalan: Premium Archa">
+            </div>
+            <div>
+              <label>Kategoriya</label>
+              <input id="productCategory" required placeholder="Masalan: Premium">
+            </div>
+            <div>
+              <label>Narxi (so'm)</label>
+              <input id="productPrice" type="number" min="1" required>
+            </div>
+            <div>
+              <label>Ombordagi soni</label>
+              <input id="productStock" type="number" min="0" required>
+            </div>
+          </div>
+          <label>Archa rasmi</label>
+          <input id="productImage" type="file" accept="image/*">
+          <label>Tavsif</label>
+          <textarea id="productDescription" placeholder="Archa haqida ma'lumot"></textarea>
+          <button class="primary-btn">+ ARCHANI SAQLASH</button>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Mavjud archalar</h2>
+        <div id="adminProducts"></div>
+      </div>
+    </div>
+
+    <div id="ordersAdmin" class="admin-section hidden">
+      <div class="panel">
+        <h2>Barcha buyurtmalar</h2>
+        <div id="allOrders"></div>
+      </div>
+    </div>
+
+    <div id="reportsAdmin" class="admin-section hidden">
+      <div class="stats">
+        <div class="stat-card"><span>Bugungi savdo</span><h2 id="reportToday">0 so'm</h2></div>
+        <div class="stat-card"><span>Bu oydagi savdo</span><h2 id="reportMonth">0 so'm</h2></div>
+        <div class="stat-card"><span>Jami savdo</span><h2 id="reportAll">0 so'm</h2></div>
+      </div>
+      <div class="panel">
+        <h2>Sotilgan mahsulotlar hisoboti</h2>
+        <div id="salesReport"></div>
+        <button class="secondary-btn" onclick="exportOrders()">Hisobotni yuklab olish (CSV)</button>
+      </div>
+    </div>
+
+    <div id="settingsAdmin" class="admin-section hidden">
+      <div class="panel">
+        <h2>Admin parolini almashtirish</h2>
+        <form id="passwordForm">
+          <label>Eski parol</label>
+          <input id="oldPassword" type="password" required>
+          <label>Yangi parol</label>
+          <input id="newPassword" type="password" minlength="6" required>
+          <label>Yangi parolni takrorlang</label>
+          <input id="confirmPassword" type="password" minlength="6" required>
+          <button class="primary-btn">PAROLNI O'ZGARTIRISH</button>
+        </form>
+        <p id="passwordMessage"></p>
+      </div>
+      <div class="panel">
+        <h2>Ma'lumotlar</h2>
+        <p>Archa Market savdo tizimi. Ma'lumotlar ushbu brauzerda saqlanadi.</p>
+        <button class="danger-btn" onclick="clearAllData()">Barcha ma'lumotlarni o'chirish</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
